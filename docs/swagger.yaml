@@ -1,0 +1,153 @@
+definitions:
+  models.CartItem:
+    properties:
+      category:
+        type: string
+      id:
+        type: string
+    type: object
+  models.Coupon:
+    properties:
+      applicable_categories:
+        items:
+          type: string
+        type: array
+      applicable_medicine_ids:
+        items:
+          type: string
+        type: array
+      coupon_code:
+        type: string
+      discount_type:
+        type: string
+      discount_value:
+        type: number
+      expiry_date:
+        type: string
+      id:
+        type: string
+      max_usage_per_user:
+        type: integer
+      min_order_value:
+        type: number
+      target:
+        type: string
+      terms_and_conditions:
+        type: string
+      usage_type:
+        type: string
+      valid_from:
+        type: string
+      valid_to:
+        type: string
+    type: object
+  models.DiscountBreakdown:
+    properties:
+      charges_discount:
+        type: number
+      items_discount:
+        type: number
+    type: object
+  models.ValidateCouponRequest:
+    properties:
+      cart_items:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+      coupon_code:
+        type: string
+      order_total:
+        type: number
+      timestamp:
+        type: string
+      'user_id db:':
+        type: string
+    type: object
+  models.ValidationResult:
+    properties:
+      discount:
+        $ref: '#/definitions/models.DiscountBreakdown'
+      is_valid:
+        type: boolean
+      message:
+        type: string
+    type: object
+info:
+  contact:
+    name: farmako-coupon-service
+    url: https://farmako-coupon-service.com/
+  description: This is the main server handling the farmako-coupon-service major operations.
+  title: farmako-coupon-service
+  version: "1.0"
+paths:
+  /v1/admin/coupons:
+    post:
+      consumes:
+      - application/json
+      description: Admin creates a coupon with the required fields.
+      parameters:
+      - description: Coupon Payload
+        in: body
+        name: coupon
+        required: true
+        schema:
+          $ref: '#/definitions/models.Coupon'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a new coupon
+      tags:
+      - Admin
+  /v1/public/coupons/applicable:
+    post:
+      consumes:
+      - application/json
+      description: Returns applicable coupons based on order/cart
+      parameters:
+      - description: Order info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ValidateCouponRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Get applicable coupons
+      tags:
+      - Public
+  /v1/public/coupons/validate:
+    post:
+      consumes:
+      - application/json
+      description: Validates a coupon code against a cart and returns the discount
+      parameters:
+      - description: Coupon validation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ValidateCouponRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ValidationResult'
+        "400":
+          description: Bad Request
+      summary: Validate a coupon
+      tags:
+      - Coupons
+swagger: "2.0"

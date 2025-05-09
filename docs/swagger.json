@@ -1,0 +1,236 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the main server handling the farmako-coupon-service major operations.",
+        "title": "farmako-coupon-service",
+        "contact": {
+            "name": "farmako-coupon-service",
+            "url": "https://farmako-coupon-service.com/"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/v1/admin/coupons": {
+            "post": {
+                "description": "Admin creates a coupon with the required fields.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create a new coupon",
+                "parameters": [
+                    {
+                        "description": "Coupon Payload",
+                        "name": "coupon",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Coupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/public/coupons/applicable": {
+            "post": {
+                "description": "Returns applicable coupons based on order/cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Get applicable coupons",
+                "parameters": [
+                    {
+                        "description": "Order info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidateCouponRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/v1/public/coupons/validate": {
+            "post": {
+                "description": "Validates a coupon code against a cart and returns the discount",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coupons"
+                ],
+                "summary": "Validate a coupon",
+                "parameters": [
+                    {
+                        "description": "Coupon validation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidateCouponRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.CartItem": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Coupon": {
+            "type": "object",
+            "properties": {
+                "applicable_categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "applicable_medicine_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "coupon_code": {
+                    "type": "string"
+                },
+                "discount_type": {
+                    "type": "string"
+                },
+                "discount_value": {
+                    "type": "number"
+                },
+                "expiry_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "max_usage_per_user": {
+                    "type": "integer"
+                },
+                "min_order_value": {
+                    "type": "number"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "terms_and_conditions": {
+                    "type": "string"
+                },
+                "usage_type": {
+                    "type": "string"
+                },
+                "valid_from": {
+                    "type": "string"
+                },
+                "valid_to": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DiscountBreakdown": {
+            "type": "object",
+            "properties": {
+                "charges_discount": {
+                    "type": "number"
+                },
+                "items_discount": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.ValidateCouponRequest": {
+            "type": "object",
+            "properties": {
+                "cart_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CartItem"
+                    }
+                },
+                "coupon_code": {
+                    "type": "string"
+                },
+                "order_total": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "user_id db:": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ValidationResult": {
+            "type": "object",
+            "properties": {
+                "discount": {
+                    "$ref": "#/definitions/models.DiscountBreakdown"
+                },
+                "is_valid": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
