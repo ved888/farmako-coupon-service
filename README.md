@@ -60,9 +60,9 @@ Create a `.env` file:
 
 ```env
 PORT=8080
-DB_HOST=localhost
+DB_HOST=db
 DB_PORT=5432
-DB_NAME=farmako_coupon_service
+DB_NAME=yourDbName
 DB_USER=postgres
 DB_PASS=yourpassword
 ```
